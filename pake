@@ -1,0 +1,42 @@
+#!/usr/bin/env pwsh
+
+# environment
+# ======================================================================================================================
+
+# Set-PSDebug -Trace 2
+
+# constants
+# ======================================================================================================================
+
+Set-Variable -Option Constant -Name DEFAULT_TARGETS -Value @(
+  'manifest'
+)
+
+# functions
+# ======================================================================================================================
+
+function script:Process-MakeTarget {
+  switch ($args[0]) {
+    # test
+    'test' {
+      $scripts = Get-ChildItem -LiteralPath $PWD -Recurse -Include '*.ps1','*.psm1'
+      Invoke-Pester -CodeCoverage $scripts
+    }
+  }
+}
+
+function script:Process-MakeTargets {
+  foreach ($target in $args) {
+    script:Process-MakeTarget $target
+  }
+}
+
+# main
+# ======================================================================================================================
+
+# make targets dispatch
+if ($args.Count -eq 0) {
+  script:Process-MakeTargets $DEFAULT_TARGETS
+} else {
+  script:Process-MakeTargets $args
+}
