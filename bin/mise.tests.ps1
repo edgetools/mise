@@ -3,9 +3,9 @@
 
 $mise = Join-Path $pwd 'bin' 'mise'
 
-# Describe 'mise' {
-#   It 'Given no arguments, prints Foo' {
-#     $output = & $mise
-#     $output | Should -Be 'Foo'
-#   }
-# }
+Describe 'mise' -Tag 'system' {
+  It 'Given no arguments, prints Foo' {
+    $output = & $mise
+    $output | Should -Be 'Foo'
+  }
+}

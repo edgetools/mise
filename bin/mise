@@ -1,3 +1,19 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env sh
 
-Write-Host 'Foo'
+MODULE_DIR="$(
+  cd "$( dirname "$0" )" > /dev/null &&
+  cd .. &&
+  pwd
+)"
+
+exec pwsh-preview -NoProfile -Command "$(cat <<EOL
+& {
+  # add MODULE_DIR to PSModulePath
+  \$env:PSModulePath = "${MODULE_DIR}:\${env:PSModulePath}"
+  # import mise
+  Import-Module mise -Force -ErrorAction Stop;
+  # invoke the cli, passing any args
+  Invoke-MiseCli${*+" ${*}"};
+}
+EOL
+)"
