@@ -5,6 +5,9 @@
 
 # Set-PSDebug -Trace 2
 
+Set-Variable -Option Constant -Name INSTALL_PATH -Value '/usr/local/bin/mise'
+Set-Variable -Option Constant -Name SOURCE_BIN_PATH -Value "${PWD}/bin/mise"
+
 # functions
 # ======================================================================================================================
 function script:Get-ScriptFiles {
@@ -30,6 +33,37 @@ function script:Invoke-MakeTarget {
     # system tests
     'systest' {
       Invoke-Pester -Tag 'system'
+    }
+    # install
+    'install' {
+      [bool]$shouldDeleteExisting = $false
+      [bool]$shouldCreateNew = $false
+      # check for existing file
+      if (Test-Path -LiteralPath $INSTALL_PATH -PathType Leaf) {
+        # check if file is a symlink
+        $existingFile = Get-Item -LiteralPath $INSTALL_PATH
+        if (($existingFile.LinkType -cne 'SymbolicLink') `
+            -or ($existingFile.Target -cne $SOURCE_BIN_PATH)) {
+          # if not a symlink, or if symlink not pointing to the correct path
+          # delete and recreate
+          $shouldDeleteExisting = $true
+          $shouldCreateNew = $true
+        }
+      } else {
+        $shouldCreateNew = $true
+      }
+      # remove if needed
+      if ($shouldDeleteExisting -eq $true) {
+        Remove-Item -LiteralPath $INSTALL_PATH -ErrorAction Stop
+      }
+      # create symlink
+      if ($shouldCreateNew -eq $true) {
+        New-Item -Path $INSTALL_PATH -ItemType SymbolicLink -Value $SOURCE_BIN_PATH -ErrorAction Stop
+      }
+    }
+    # uninstall
+    'uninstall' {
+      Remove-Item -LiteralPath $INSTALL_PATH
     }
   }
 }
