@@ -1,5 +1,3 @@
-#!/usr/bin/env pwsh
-
 # environment
 # ======================================================================================================================
 
@@ -7,10 +5,11 @@
 
 Set-Variable -Option Constant -Name INSTALL_PATH -Value '/usr/local/bin/mise'
 Set-Variable -Option Constant -Name SOURCE_BIN_PATH -Value "${PWD}/bin/mise"
+Set-Variable -Option Constant -Name SOURCE_MODULE_PATH -Value "${PWD}/mise"
 
 # functions
 # ======================================================================================================================
-function script:Get-ScriptFiles {
+function Get-ScriptFiles {
   $scriptFiles = [System.Collections.Generic.List[System.Object]]::new()
   # get .ps1 scripts but ignore test files
   $scriptFiles.AddRange(@(Get-ChildItem -LiteralPath $PWD -Recurse -File -Filter '*.ps1' -Exclude '*.tests.ps1'))
@@ -19,16 +18,15 @@ function script:Get-ScriptFiles {
   return $scriptFiles
 }
 
-function script:Invoke-MakeTarget {
+function Invoke-MakeTarget {
   switch ($args[0]) {
     # test
     'test' {
-      script:Invoke-MakeTargets 'unit' 'systest'
-      # Invoke-Pester -CodeCoverage (script:Get-ScriptFiles)
+      Invoke-MakeTargets 'unit' 'systest'
     }
     # unit tests
     'unit' {
-      Invoke-Pester -CodeCoverage (script:Get-ScriptFiles) -Tag 'unit'
+      Invoke-Pester -CodeCoverage (Get-ScriptFiles) -Tag 'unit'
     }
     # system tests
     'systest' {
@@ -63,14 +61,25 @@ function script:Invoke-MakeTarget {
     }
     # uninstall
     'uninstall' {
+      # remove the symlink
       Remove-Item -LiteralPath $INSTALL_PATH
+    }
+    # load
+    'load' {
+      Import-Module $SOURCE_MODULE_PATH -Force -Verbose
+      Set-Alias -Name 'mise' -Value 'Invoke-MiseCli' -Verbose -Scope Global
+    }
+    # unload
+    'unload' {
+      Remove-Module -Name 'mise' -Verbose
+      Remove-Alias -Name 'mise' -Verbose
     }
   }
 }
 
-function script:Invoke-MakeTargets {
+function Invoke-MakeTargets {
   foreach ($target in $args) {
-    script:Invoke-MakeTarget $target
+    Invoke-MakeTarget $target
   }
 }
 
@@ -79,7 +88,7 @@ function script:Invoke-MakeTargets {
 
 # make targets dispatch
 if ($args.Count -eq 0) {
-  script:Invoke-MakeTargets $DEFAULT_TARGETS
+  Invoke-MakeTargets $DEFAULT_TARGETS
 } else {
-  script:Invoke-MakeTargets $args
+  Invoke-MakeTargets $args
 }

@@ -17,7 +17,8 @@ then
   echo >&2 "MODULE_DIR: ${MODULE_DIR}"
 fi
 
-exec pwsh-preview -NoProfile -Command "$(cat <<EOL
+generate_pwsh_command() {
+  cat <<EOL
 & {
   # add MODULE_DIR to PSModulePath
   \$env:PSModulePath = "${MODULE_DIR}:\${env:PSModulePath}"
@@ -27,4 +28,11 @@ exec pwsh-preview -NoProfile -Command "$(cat <<EOL
   Invoke-MiseCli${*+" ${*}"};
 }
 EOL
-)"
+}
+
+if [ "${1}" = "shell" ]
+then
+  exec pwsh-preview -NoExit -Command "$(generate_pwsh_command "$@")"
+else
+  exec pwsh-preview -Command "$(generate_pwsh_command "$@")"
+fi
