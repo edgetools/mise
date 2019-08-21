@@ -1,7 +1,7 @@
 # main
 # ======================================================================================================================
 
-Import-Module (Join-Path $PSScriptRoot 'lib' 'docker-compose')
+# Import-Module (Join-Path $PSScriptRoot 'lib' 'docker-compose')
 
 function Update-Prompt {
   function script:_original_prompt {}
@@ -25,53 +25,58 @@ function Get-Version {
 function Format-Header {
 @"
 
-      ___                       ___           ___
-     /__/\        ___          /  /\         /  /\
-    |  |::\      /  /\        /  /:/_       /  /:/_
-    |  |:|:\    /  /:/       /  /:/ /\     /  /:/ /\
-  __|__|:|\:\  /__/::\      /  /:/ /::\   /  /:/ /:/_
- /__/::::| \:\ \__\/\:\__  /__/:/ /:/\:\ /__/:/ /:/ /\
- \  \:\~~\__\/    \  \:\/\ \  \:\/:/~/:/ \  \:\/:/ /:/
-  \  \:\           \__\::/  \  \::/ /:/   \  \::/ /:/
-   \  \:\          /__/:/    \__\/ /:/     \  \:\/:/
-    \  \:\         \__\/       /__/:/       \  \::/
-     \__\/                     \__\/         \__\/
+       ___                       ___           ___
+      /__/\        ___          /  /\         /  /\
+     |  |::\      /  /\        /  /:/_       /  /:/_
+     |  |:|:\    /  /:/       /  /:/ /\     /  /:/ /\
+   __|__|:|\:\  /__/::\      /  /:/ /::\   /  /:/ /:/_
+  /__/::::| \:\ \__\/\:\__  /__/:/ /:/\:\ /__/:/ /:/ /\
+  \  \:\~~\__\/    \  \:\/\ \  \:\/:/~/:/ \  \:\/:/ /:/
+   \  \:\           \__\::/  \  \::/ /:/   \  \::/ /:/
+    \  \:\          /__/:/    \__\/ /:/     \  \:\/:/
+     \  \:\         \__\/       /__/:/       \  \::/
+      \__\/                     \__\/         \__\/
 
- type 'exit' to exit
+                          v$(Get-Version)
+
+   type 'exit' to quit
 
 "@
+}
+
+function Enter-Shell {
+  if ($Global:MiseLoaded -ne $true) {
+    Update-Prompt
+    $Global:MiseLoaded = $true
+  }
+  Write-Host (Format-Header)
 }
 
 function Invoke-Cli {
   [CmdletBinding()]
   Param(
     [Parameter(
-      Position=0,
       Mandatory=$true,
-      HelpMessage='enter a service command'
+      Position=0,
+      ParameterSetName='Version'
     )]
-    [ValidateSet(
-      'foo',
-      'help',
-      'shell',
-      'version'
+    [switch]$version,
+
+    [Parameter(
+      Mandatory=$true,
+      Position=0,
+      ParameterSetName='Help'
     )]
-    [string]$CommandName
+    [switch]$help
   )
 
-  switch ($CommandName) {
-    'shell' {
-      Update-Prompt
-      Write-Host (Format-Header)
-    }
-    'help' {
-      Get-Help $MyInvocation.MyCommand.Module.Name
-    }
-    'version' {
+  switch ($PSCmdlet.ParameterSetName) {
+    'Version' {
       Write-Host (Get-Version)
     }
-    Default {
-      Write-Host "TODO: Help Text"
+    'Help' {
+      Get-Help Invoke-MiseCli
     }
   }
 }
+Set-Alias -Name 'mise' -Value Invoke-MiseCli -Scope Global

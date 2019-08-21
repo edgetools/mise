@@ -17,22 +17,52 @@ then
   echo >&2 "MODULE_DIR: ${MODULE_DIR}"
 fi
 
-generate_pwsh_command() {
+# grab first argument and convert to lowercase
+command_name="$(echo "${1}" | /usr/bin/env tr '[:upper:]' '[:lower:]')"
+shift || :
+
+# ensure first argument starts with a dash
+if [ -n "${command_name}" ] && [ "$(echo "${command_name}" | cut -c1)" != '-' ]
+then
+  command_name="-${command_name}"
+fi
+
+mise_shell() {
   cat <<EOL
 & {
   # add MODULE_DIR to PSModulePath
   \$env:PSModulePath = "${MODULE_DIR}:\${env:PSModulePath}"
   # import mise
-  Import-Module mise -Force -ErrorAction Stop;
-  # invoke the cli, passing any args
-  Invoke-MiseCli${*+" ${*}"};
+  Import-Module mise -Force -ErrorAction Stop
+  # enter the shell
+  Enter-MiseShell
+  if (\$? -eq \$false) {
+    exit 1
+  }
 }
 EOL
 }
 
-if [ "${1}" = "shell" ]
+mise_command() {
+  cat <<EOL
+& {
+  # add MODULE_DIR to PSModulePath
+  \$env:PSModulePath = "${MODULE_DIR}:\${env:PSModulePath}"
+  # import mise
+  Import-Module mise -Force -ErrorAction Stop
+  # invoke the cli, passing any args
+  Invoke-MiseCli${*+" ${*}"}
+  # if (\$? -eq \$false) {
+  #   exit 1
+  # }
+}
+EOL
+}
+
+# set -NoExit if we're running the shell
+if [ "${command_name}" = "-shell" ]
 then
-  exec pwsh-preview -NoExit -Command "$(generate_pwsh_command "$@")"
+  exec pwsh-preview -NoExit -Command "$(mise_shell ${@+"${@}"})"
 else
-  exec pwsh-preview -Command "$(generate_pwsh_command "$@")"
+  exec pwsh-preview -Command "$(mise_command ${command_name+"${command_name}"} ${@+"${@}"})"
 fi
