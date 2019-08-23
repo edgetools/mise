@@ -19,10 +19,23 @@ function Update-Prompt {
 }
 
 function Get-Version {
-  Write-Output $MyInvocation.MyCommand.Module.Version
+  $version = [System.Management.Automation.SemanticVersion]::new(
+    $MyInvocation.MyCommand.Module.Version.Major,
+    $MyInvocation.MyCommand.Module.Version.Minor,
+    $MyInvocation.MyCommand.Module.Version.Build,
+    $MyInvocation.MyCommand.Module.PrivateData.PSData.Prerelease
+  )
+  return $version
 }
 
 function Format-Header {
+  # place the version string in the exact
+  # middle of the logo
+  $version_line = '                            '
+  $version_string = "v$(Get-Version)"
+  $trim_length = $version_string.Length / 2
+  $version_line = $version_line.Remove($version_line.Length - $trim_length - 1, $trim_length)
+  $version_line += $version_string
 @"
 
        ___                       ___           ___
@@ -37,7 +50,7 @@ function Format-Header {
      \  \:\         \__\/       /__/:/       \  \::/
       \__\/                     \__\/         \__\/
 
-                          v$(Get-Version)
+$version_line
 
    type 'exit' to quit
 

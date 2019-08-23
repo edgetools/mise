@@ -1,0 +1,34 @@
+language: minimal
+
+# stages:
+
+matrix:
+  include:
+    - os: linux
+      dist: bionic
+      addons:
+        snaps:
+          - powershell
+    - os: linux
+      dist: bionic
+      addons:
+        snaps:
+          - powershell-preview
+    - os: osx
+      before_install:
+        - brew cask install powershell
+    - os: osx
+      before_install:
+        - brew cask install powershell-preview
+
+# install:
+#   - pwsh -f '${env:TRAVIS_BUILD_DIR}/install-dependencies.ps1'
+
+# before_script:
+#   - pwsh -f '${env:TRAVIS_BUILD_DIR}/build.ps1'
+
+script:
+  - pwsh -File '${env:TRAVIS_BUILD_DIR}/pake.ps1' 'test'
+
+# after_success:
+#   - pwsh -f '${env:TRAVIS_BUILD_DIR}/deploy.ps1'

@@ -62,7 +62,7 @@ EOL
 # set -NoExit if we're running the shell
 if [ "${command_name}" = "-shell" ]
 then
-  exec pwsh-preview -NoExit -Command "$(mise_shell ${@+"${@}"})"
+  exec /usr/bin/env pwsh -NoExit -Command "$(mise_shell ${@+"${@}"})"
 else
-  exec pwsh-preview -Command "$(mise_command ${command_name+"${command_name}"} ${@+"${@}"})"
+  exec /usr/bin/env pwsh -Command "$(mise_command ${command_name+"${command_name}"} ${@+"${@}"})"
 fi
