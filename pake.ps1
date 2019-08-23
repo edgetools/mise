@@ -30,7 +30,7 @@ function Install-DevDependencies {
       Write-Host " - '$devDependency' found"
     } else {
       Write-Host " - '$devDependency' installing ..."
-      Install-Module -Name $devDependency -Verbose -ErrorAction Stop
+      Install-Module -Name $devDependency -AcceptLicense -Force -Verbose -ErrorAction Stop
     }
   }
   Write-Host "done"
