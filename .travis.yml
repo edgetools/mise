@@ -8,18 +8,22 @@ matrix:
       dist: bionic
       addons:
         snaps:
-          - powershell
+          - name: powershell
+            confinement: classic
+            channel: latest/stable
     - os: linux
       dist: bionic
       addons:
         snaps:
-          - powershell-preview
+          - name: powershell-preview
+            confinement: classic
+            channel: latest/stable
     - os: osx
       before_install:
-        - brew cask install powershell
+        - HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell
     - os: osx
       before_install:
-        - brew cask install powershell-preview
+        - HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview
 
 # install:
 #   - pwsh -f '${env:TRAVIS_BUILD_DIR}/install-dependencies.ps1'
@@ -28,7 +32,7 @@ matrix:
 #   - pwsh -f '${env:TRAVIS_BUILD_DIR}/build.ps1'
 
 script:
-  - pwsh -File '${env:TRAVIS_BUILD_DIR}/pake.ps1' 'test'
+  - pwsh -File "${env:TRAVIS_BUILD_DIR}/pake.ps1" 'test'
 
 # after_success:
 #   - pwsh -f '${env:TRAVIS_BUILD_DIR}/deploy.ps1'
