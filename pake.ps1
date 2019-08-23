@@ -30,9 +30,9 @@ function Update-ModuleManifestForRelease {
     AliasesToExport = 'mise'
     CmdletsToExport = @()
     FunctionsToExport = @(
-      'Enter-Shell',
-      'Get-Version',
-      'Invoke-Cli'
+      'Enter-MiseShell',
+      'Get-MiseVersion',
+      'Invoke-MiseCli'
     )
     Path = (Join-Path $SOURCE_MODULE_PATH 'mise.psd1')
   }
