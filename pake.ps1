@@ -49,13 +49,13 @@ function Invoke-MakeTarget {
     # unit tests
     'unit' {
       if ((Invoke-Pester -CodeCoverage (Get-ScriptFiles) -Tag 'unit' -PassThru).FailedCount -gt 0) {
-        throw "tests failed"
+        throw "unit tests failed"
       }
     }
     # system tests
     'systest' {
       if ((Invoke-Pester -Tag 'system' -PassThru).FailedCount -gt 0) {
-        throw "tests failed"
+        throw "system tests failed"
       }
     }
     # install

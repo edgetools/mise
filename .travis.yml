@@ -24,10 +24,10 @@ matrix:
         - sudo ln -s /usr/bin/pwsh-preview /usr/bin/pwsh
     - os: osx
       before_install:
-        - HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell
+        - HOMEBREW_NO_AUTO_UPDATE=1 brew config && HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell
     - os: osx
       before_install:
-        - HOMEBREW_NO_AUTO_UPDATE=1 brew tap Homebrew/cask-versions && HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview && ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
+        - HOMEBREW_NO_AUTO_UPDATE=1 brew config && HOMEBREW_NO_AUTO_UPDATE=1 brew tap Homebrew/cask-versions && HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview && ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
 
 install:
   - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
