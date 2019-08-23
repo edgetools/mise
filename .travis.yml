@@ -7,19 +7,23 @@ matrix:
   - os: linux
     dist: bionic
     addons:
-      snaps:
-      - name: powershell
-        confinement: classic
-        channel: latest/stable
+      apt:
+        sources:
+        - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/18.04/prod bionic main"
+          key_url: "https://packages.microsoft.com/keys/microsoft.asc"
+        packages:
+        - powershell
   - os: linux
     dist: bionic
     addons:
-      snaps:
-      - name: powershell-preview
-        confinement: classic
-        channel: latest/stable
+      apt:
+        sources:
+        - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/18.04/prod bionic main"
+          key_url: "https://packages.microsoft.com/keys/microsoft.asc"
+        packages:
+        - powershell-preview
     before_install:
-      - sudo snap alias pwsh pwsh-preview
+    - ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
   - os: osx
     before_install:
     - HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell
