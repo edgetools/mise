@@ -164,8 +164,6 @@ function Invoke-MakeTarget {
 function Invoke-MakeTargets {
   [bool]$invocation_results = @()
   try {
-    Write-Host "targets:"
-    Write-Host '-' $args
     # invoke each make target
     foreach ($target in $args) {
       Invoke-MakeTarget $target
@@ -187,6 +185,4 @@ function Invoke-MakeTargets {
 
 # make targets dispatch
 
-Write-Host "input:"
-Write-Host '-' $args
-Invoke-MakeTargets $args
+Invoke-MakeTargets @args
