@@ -76,11 +76,11 @@ jobs:
           - $HOME/Library/Caches/Homebrew
       before_install:
         - |
-          HOMEBREW_NO_AUTO_UPDATE=1 unbuffer brew tap Homebrew/cask-versions &&
-          HOMEBREW_AUTO_UPDATE_SECS=86400 unbuffer brew update &&
-          HOMEBREW_NO_AUTO_UPDATE=1 unbuffer brew config &&
-          HOMEBREW_NO_AUTO_UPDATE=1 unbuffer brew install expect &&
-          HOMEBREW_NO_AUTO_UPDATE=1 unbuffer brew cask install powershell-preview &&
+          HOMEBREW_NO_AUTO_UPDATE=1 brew tap Homebrew/cask-versions &&
+          HOMEBREW_AUTO_UPDATE_SECS=86400 brew update &&
+          HOMEBREW_NO_AUTO_UPDATE=1 brew config &&
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install expect &&
+          HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview &&
           ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
       install:
         - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
