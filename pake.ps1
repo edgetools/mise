@@ -20,6 +20,10 @@ function Get-ScriptFiles {
 
 function Invoke-MakeTarget {
   switch ($args[0]) {
+    # fail
+    'fail' {
+      exit 64
+    }
     # test
     'test' {
       Invoke-MakeTargets 'unit' 'systest'
