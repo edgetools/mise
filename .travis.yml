@@ -20,7 +20,7 @@ jobs:
       install:
         - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
       script:
-        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" unit
+        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" test
 
     # test - linux - pwsh-preview
     - stage: test
@@ -41,7 +41,7 @@ jobs:
       install:
         - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
       script:
-        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" unit
+        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" test
 
     # test - osx - pwsh
     - stage: test
@@ -59,7 +59,7 @@ jobs:
       install:
         - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
       script:
-        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" unit
+        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" test
       before_cache:
         - HOMEBREW_NO_AUTO_UPDATE=1 brew cleanup
 
@@ -81,7 +81,7 @@ jobs:
       install:
         - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
       script:
-        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" unit
+        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" test
       before_cache:
         - HOMEBREW_NO_AUTO_UPDATE=1 brew cleanup
 
