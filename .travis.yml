@@ -100,4 +100,4 @@ jobs:
       script:
         - |
           pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" ci &&
-          pwsh -NonInteractive -Command "& { Import-Module ./mise; mise -Version }"
+          pwsh -NonInteractive -Command "& { Import-Module ${TRAVIS_BUILD_DIR}/mise; mise -Version }"

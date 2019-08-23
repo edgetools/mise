@@ -34,7 +34,6 @@ function Update-ModuleManifestForCI {
       'Get-Version',
       'Invoke-Cli'
     )
-    PrivateData = @{ PSData = @{} }
     Path = (Join-Path $SOURCE_MODULE_PATH 'mise.psd1')
   }
 
@@ -44,8 +43,8 @@ function Update-ModuleManifestForCI {
     # get prerelease file, if present
     if (Test-Path -LiteralPath $PRERELEASE_FILE_PATH) {
       $prerelease = Get-Content -LiteralPath $PRERELEASE_FILE_PATH -ErrorAction Stop
-      $prerelease += "${env:TRAVIS_BUILD_NUMBER}"
-      $manifest_args['PrivateData']['PSData']['Prerelease'] = $prerelease
+      $prerelease += ${env:TRAVIS_BUILD_NUMBER}
+      $manifest_args['Prerelease'] = $prerelease
     }
   } else {
     throw [System.IO.FileNotFoundException] "$VERSION_FILE_PATH not found."
