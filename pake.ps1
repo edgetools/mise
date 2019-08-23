@@ -6,8 +6,8 @@
 # Set-PSDebug -Trace 2
 
 Set-Variable -Option Constant -Name INSTALL_PATH -Value '/usr/local/bin/mise'
-Set-Variable -Option Constant -Name SOURCE_BIN_PATH -Value "${PWD}/bin/mise"
-Set-Variable -Option Constant -Name SOURCE_MODULE_PATH -Value "${PWD}/mise"
+Set-Variable -Option Constant -Name SOURCE_BIN_PATH -Value (Join-Path $PSScriptRoot 'bin' 'mise')
+Set-Variable -Option Constant -Name SOURCE_MODULE_PATH -Value (Join-Path $PSScriptRoot 'mise')
 
 # functions
 # ======================================================================================================================
@@ -96,12 +96,10 @@ function Invoke-MakeTarget {
     # load
     'load' {
       Import-Module $SOURCE_MODULE_PATH -Force -Verbose
-      Set-Alias -Name 'mise' -Value 'Invoke-MiseCli' -Verbose -Scope Global
     }
     # unload
     'unload' {
       Remove-Module -Name 'mise' -Verbose
-      Remove-Alias -Name 'mise' -Verbose
     }
     # dep
     'dep' {
