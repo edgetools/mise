@@ -18,6 +18,24 @@ function Get-ScriptFiles {
   return $scriptFiles
 }
 
+function Install-DevDependencies {
+  $devDependencies = @(
+    'Pester'
+  )
+  Write-Host "checking dependencies ..."
+  foreach ($devDependency in $devDependencies) {
+    # list all available modules
+    # to see if the target is already installed
+    if (Get-Module -ListAvailable -Name $devDependency) {
+      Write-Host " - '$devDependency' found"
+    } else {
+      Write-Host " - '$devDependency' installing ..."
+      Install-Module -Name $devDependency -Verbose -ErrorAction Stop
+    }
+  }
+  Write-Host "done"
+}
+
 function Invoke-MakeTarget {
   switch ($args[0]) {
     # test
@@ -77,6 +95,10 @@ function Invoke-MakeTarget {
     'unload' {
       Remove-Module -Name 'mise' -Verbose
       Remove-Alias -Name 'mise' -Verbose
+    }
+    # dep
+    'dep' {
+      Install-DevDependencies
     }
   }
 }
