@@ -20,10 +20,10 @@ matrix:
             channel: latest/stable
     - os: osx
       before_install:
-        - HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell
+        - HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell && which pwsh
     - os: osx
       before_install:
-        - HOMEBREW_NO_AUTO_UPDATE=1 brew tap Homebrew/cask-versions && HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview && which pwsh
+        - HOMEBREW_NO_AUTO_UPDATE=1 brew tap Homebrew/cask-versions && HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview && which pwsh-preview
 
 # install:
 #   - pwsh -f '${env:TRAVIS_BUILD_DIR}/install-dependencies.ps1'
