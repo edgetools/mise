@@ -18,7 +18,7 @@ function Update-Prompt {
   }
 }
 
-function Get-Version {
+function Get-MiseVersion {
   $version = [System.Management.Automation.SemanticVersion]::new(
     $MyInvocation.MyCommand.Module.Version.Major,
     $MyInvocation.MyCommand.Module.Version.Minor,
@@ -32,7 +32,7 @@ function Format-Header {
   # place the version string in the exact
   # middle of the logo
   $version_line = '                            '
-  $version_string = "v$(Get-Version)"
+  $version_string = "v$(Get-MiseVersion)"
   $trim_length = $version_string.Length / 2
   $version_line = $version_line.Remove($version_line.Length - $trim_length - 1, $trim_length)
   $version_line += $version_string
@@ -57,7 +57,7 @@ $version_line
 "@
 }
 
-function Enter-Shell {
+function Enter-MiseShell {
   if ($Global:MiseLoaded -ne $true) {
     Update-Prompt
     $Global:MiseLoaded = $true
@@ -65,7 +65,7 @@ function Enter-Shell {
   Write-Host (Format-Header)
 }
 
-function Invoke-Cli {
+function Invoke-MiseCli {
   [CmdletBinding()]
   Param(
     [Parameter(
@@ -85,7 +85,7 @@ function Invoke-Cli {
 
   switch ($PSCmdlet.ParameterSetName) {
     'Version' {
-      (Get-Version).ToString()
+      (Get-MiseVersion).ToString()
     }
     'Help' {
       Get-Help Invoke-MiseCli
