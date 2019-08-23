@@ -20,12 +20,13 @@ matrix:
             channel: latest/stable
       before_install:
         - sudo ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
+        - ls -la /usr/local/bin/
     - os: osx
       before_install:
         - HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell
     - os: osx
       before_install:
-        - HOMEBREW_NO_AUTO_UPDATE=1 brew tap Homebrew/cask-versions && HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview && sudo ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
+        - HOMEBREW_NO_AUTO_UPDATE=1 brew tap Homebrew/cask-versions && HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview && ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
 
 # install:
 #   - pwsh -f '${env:TRAVIS_BUILD_DIR}/install-dependencies.ps1'
@@ -34,7 +35,7 @@ matrix:
 #   - pwsh -f '${env:TRAVIS_BUILD_DIR}/build.ps1'
 
 script:
-  - pwsh -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'test'
+  - false # pwsh -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'test'
 
 # after_success:
 #   - pwsh -f '${env:TRAVIS_BUILD_DIR}/deploy.ps1'
