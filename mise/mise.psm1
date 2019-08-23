@@ -85,7 +85,7 @@ function Invoke-Cli {
 
   switch ($PSCmdlet.ParameterSetName) {
     'Version' {
-      Write-Host (Get-Version)
+      (Get-Version).ToString()
     }
     'Help' {
       Get-Help Invoke-MiseCli
