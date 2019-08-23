@@ -148,6 +148,15 @@ function Invoke-MakeTarget {
     'ci' {
       Update-ModuleManifestForCI
     }
+    # publish
+    'publish' {
+      Publish-Module `
+        -AllowPrerelease `
+        -ErrorAction Stop `
+        -Force `
+        -NuGetApiKey ${env:NUGET_API_KEY} `
+        -Path $SOURCE_MODULE_PATH
+    }
   }
 }
 
