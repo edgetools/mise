@@ -152,12 +152,8 @@ function Invoke-MakeTarget {
     # publish
     'publish' {
       Write-Host 'Publishing ...'
-      Publish-Module `
-        -AllowPrerelease `
-        -ErrorAction Stop `
-        -Force `
-        -NuGetApiKey ${env:NUGET_API_KEY} `
-        -Path $SOURCE_MODULE_PATH
+      Publish-Module -AllowPrerelease -ErrorAction Stop -Force -NuGetApiKey ${env:NUGET_API_KEY} -Path $SOURCE_MODULE_PATH
+      Write-Host -ForegroundColor Green 'Published!'
     }
   }
 }
