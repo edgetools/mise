@@ -8,6 +8,8 @@
 Set-Variable -Option Constant -Name INSTALL_PATH -Value '/usr/local/bin/mise'
 Set-Variable -Option Constant -Name SOURCE_BIN_PATH -Value (Join-Path $PSScriptRoot 'bin' 'mise')
 Set-Variable -Option Constant -Name SOURCE_MODULE_PATH -Value (Join-Path $PSScriptRoot 'mise')
+Set-Variable -Option Constant -Name VERSION_FILE_PATH -Value (Join-Path $PSScriptRoot '.VERSION')
+Set-Variable -Option Constant -Name PRERELEASE_FILE_PATH -Value (Join-Path $PSScriptRoot '.PRERELEASE')
 
 # functions
 # ======================================================================================================================
@@ -19,6 +21,27 @@ function Get-FilesForTestCoverage {
   # get .psm1 module files
   $scriptFiles.AddRange(@(Get-ChildItem -LiteralPath $PWD -Recurse -File -Filter '*.psm1'))
   return $scriptFiles
+}
+
+function Update-ModuleManifestForCI {
+  if (Test-Path -LiteralPath $VERSION_FILE_PATH) {
+    $version = Get-Content -LiteralPath $VERSION_FILE_PATH
+    if (Test-Path -LiteralPath $PRERELEASE_FILE_PATH) {
+      $prerelease = Get-Content -LiteralPath $PRERELEASE_FILE_PATH
+      $prerelease += "${env:TRAVIS_BUILD_NUMBER}"
+    }
+  } else {
+    throw [System.IO.FileNotFoundException] "$VERSION_FILE_PATH not found."
+  }
+  Update-ModuleManifest `
+    -Path (Join-Path $SOURCE_MODULE_PATH 'mise.psd1') `
+    -AliasesToExport 'mise' `
+    -CmdletsToExport @() `
+    -FunctionsToExport @(
+      'Enter-Shell',
+      'Get-Version',
+      'Invoke-Cli'
+    )
 }
 
 function Install-DevDependencies {
@@ -105,6 +128,10 @@ function Invoke-MakeTarget {
     'dep' {
       Install-DevDependencies
     }
+    # ci
+    'ci' {
+      Update-ModuleManifestForCI
+    }
   }
 }
 
@@ -122,7 +149,7 @@ function Invoke-MakeTargets {
     }
   }
   catch {
-    Write-Error $_
+    Write-Error -ErrorRecord $_
     exit 64
   }
 }
