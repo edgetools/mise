@@ -1,0 +1,68 @@
+#!/usr/bin/env sh
+
+set -e
+
+MODULE_DIR="$(
+  # try to follow symlink
+  bin_path="$(
+    readlink "$0" || echo "$0"
+  )"
+  cd "$( dirname "${bin_path}" )" > /dev/null
+  cd ..
+  pwd
+)"
+
+if [ -n "${DEBUG}" ]
+then
+  echo >&2 "MODULE_DIR: ${MODULE_DIR}"
+fi
+
+# grab first argument and convert to lowercase
+command_name="$(echo "${1}" | /usr/bin/env tr '[:upper:]' '[:lower:]')"
+shift || :
+
+# ensure first argument starts with a dash
+if [ -n "${command_name}" ] && [ "$(echo "${command_name}" | cut -c1)" != '-' ]
+then
+  command_name="-${command_name}"
+fi
+
+mise_shell() {
+  cat <<EOL
+& {
+  # add MODULE_DIR to PSModulePath
+  \$env:PSModulePath = "${MODULE_DIR}:\${env:PSModulePath}"
+  # import mise
+  Import-Module mise -Force -ErrorAction Stop
+  # enter the shell
+  Enter-MiseShell
+  if (\$? -eq \$false) {
+    exit 1
+  }
+}
+EOL
+}
+
+mise_command() {
+  cat <<EOL
+& {
+  # add MODULE_DIR to PSModulePath
+  \$env:PSModulePath = "${MODULE_DIR}:\${env:PSModulePath}"
+  # import mise
+  Import-Module mise -Force -ErrorAction Stop
+  # invoke the cli, passing any args
+  Invoke-MiseCli${*+" ${*}"}
+  # if (\$? -eq \$false) {
+  #   exit 1
+  # }
+}
+EOL
+}
+
+# set -NoExit if we're running the shell
+if [ "${command_name}" = "-shell" ]
+then
+  exec /usr/bin/env pwsh -NoExit -Command "$(mise_shell ${@+"${@}"})"
+else
+  exec /usr/bin/env pwsh -Command "$(mise_command ${command_name+"${command_name}"} ${@+"${@}"})"
+fi
