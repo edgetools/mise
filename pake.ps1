@@ -83,7 +83,6 @@ function Install-DevDependencies {
 }
 
 function Invoke-MakeTarget {
-  Write-Host "making: $($args[0])"
   switch ($args[0]) {
     # test
     'test' {
@@ -152,18 +151,19 @@ function Invoke-MakeTarget {
     # publish
     'publish' {
       Write-Host 'Publishing ...'
-      Publish-Module -AllowPrerelease -ErrorAction Stop -Force -NuGetApiKey ${env:NUGET_API_KEY} -Path $SOURCE_MODULE_PATH
+      Publish-Module `
+        -ErrorAction Stop `
+        -Force `
+        -NuGetApiKey ${env:NUGET_API_KEY} `
+        -Path $SOURCE_MODULE_PATH
       Write-Host -ForegroundColor Green 'Published!'
     }
   }
 }
 
 function Invoke-MakeTargets {
-  Write-Host "target args:"
-  Write-Host "-" $args
-  Write-Host "target length: $($args.Length)"
-  [bool]$invocation_results = @()
   try {
+    [bool]$invocation_results = @()
     # invoke each make target
     foreach ($target in $args) {
       Invoke-MakeTarget $target
@@ -171,12 +171,11 @@ function Invoke-MakeTargets {
     }
     # check if any of the targets failed
     if ($invocation_results -contains $false) {
-      exit 64
+      throw 'make target failed'
     }
   }
   catch {
-    Write-Error -ErrorRecord $_
-    exit 64
+    throw $_
   }
 }
 
@@ -185,7 +184,8 @@ function Invoke-MakeTargets {
 
 # make targets dispatch
 
-Write-Host "input args:"
-Write-Host "-" $args
-Write-Host "input length: $($args.Length)"
-Invoke-MakeTargets @args
+try {
+  Invoke-MakeTargets @args
+} catch {
+  throw $_
+}

@@ -9,5 +9,6 @@ Describe 'Invoke-MiseCli' -Tag 'unit' {
     # we should test the cli externally with bin/mise.tests.ps1
     # and this cli should just be tested with mock calls
     Invoke-MiseCli -Version | Should -Be (Get-MiseVersion).ToString()
+    $false | Should -Be $true
   }
 }
