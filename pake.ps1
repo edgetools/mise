@@ -83,6 +83,7 @@ function Install-DevDependencies {
 }
 
 function Invoke-MakeTarget {
+  Write-Host "making: $($args[0])"
   switch ($args[0]) {
     # test
     'test' {
@@ -163,6 +164,8 @@ function Invoke-MakeTarget {
 function Invoke-MakeTargets {
   [bool]$invocation_results = @()
   try {
+    Write-Host "targets:"
+    Write-Host '-' $args
     # invoke each make target
     foreach ($target in $args) {
       Invoke-MakeTarget $target
@@ -183,8 +186,7 @@ function Invoke-MakeTargets {
 # ======================================================================================================================
 
 # make targets dispatch
-if ($args.Count -eq 0) {
-  Invoke-MakeTargets $DEFAULT_TARGETS
-} else {
-  Invoke-MakeTargets $args
-}
+
+Write-Host "input:"
+Write-Host '-' $args
+Invoke-MakeTargets $args
