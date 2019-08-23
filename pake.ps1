@@ -10,6 +10,7 @@ Set-Variable -Option Constant -Name SOURCE_BIN_PATH -Value (Join-Path $PSScriptR
 Set-Variable -Option Constant -Name SOURCE_MODULE_PATH -Value (Join-Path $PSScriptRoot 'mise')
 Set-Variable -Option Constant -Name VERSION_FILE_PATH -Value (Join-Path $PSScriptRoot '.VERSION')
 Set-Variable -Option Constant -Name PRERELEASE_FILE_PATH -Value (Join-Path $PSScriptRoot '.PRERELEASE')
+Set-Variable -Option Constant -Name CHANGELOG_FILE_PATH -Value (Join-Path $PSScriptRoot 'CHANGELOG')
 
 # functions
 # ======================================================================================================================
@@ -24,24 +25,40 @@ function Get-FilesForTestCoverage {
 }
 
 function Update-ModuleManifestForCI {
-  if (Test-Path -LiteralPath $VERSION_FILE_PATH) {
-    $version = Get-Content -LiteralPath $VERSION_FILE_PATH
-    if (Test-Path -LiteralPath $PRERELEASE_FILE_PATH) {
-      $prerelease = Get-Content -LiteralPath $PRERELEASE_FILE_PATH
-      $prerelease += "${env:TRAVIS_BUILD_NUMBER}"
-    }
-  } else {
-    throw [System.IO.FileNotFoundException] "$VERSION_FILE_PATH not found."
-  }
-  Update-ModuleManifest `
-    -Path (Join-Path $SOURCE_MODULE_PATH 'mise.psd1') `
-    -AliasesToExport 'mise' `
-    -CmdletsToExport @() `
-    -FunctionsToExport @(
+  # initial args
+  $manifest_args = @{
+    AliasesToExport = 'mise'
+    CmdletsToExport = @()
+    FunctionsToExport = @(
       'Enter-Shell',
       'Get-Version',
       'Invoke-Cli'
     )
+    PrivateData = @{ PSData = @{} }
+    Path = (Join-Path $SOURCE_MODULE_PATH 'mise.psd1')
+  }
+
+  # get version file
+  if (Test-Path -LiteralPath $VERSION_FILE_PATH) {
+    $manifest_args['ModuleVersion'] = Get-Content -LiteralPath $VERSION_FILE_PATH -ErrorAction Stop
+    # get prerelease file, if present
+    if (Test-Path -LiteralPath $PRERELEASE_FILE_PATH) {
+      $prerelease = Get-Content -LiteralPath $PRERELEASE_FILE_PATH -ErrorAction Stop
+      $prerelease += "${env:TRAVIS_BUILD_NUMBER}"
+      $manifest_args['PrivateData']['PSData']['Prerelease'] = $prerelease
+    }
+  } else {
+    throw [System.IO.FileNotFoundException] "$VERSION_FILE_PATH not found."
+  }
+
+  # get changelog
+  if (Test-Path -LiteralPath $CHANGELOG_FILE_PATH) {
+    $manifest_args['ReleaseNotes'] = Get-Content -LiteralPath $CHANGELOG_FILE_PATH -ErrorAction Stop
+  } else {
+    throw [System.IO.FileNotFoundException] "$CHANGELOG_FILE_PATH not found."
+  }
+
+  Update-ModuleManifest @manifest_args -ErrorAction Stop
 }
 
 function Install-DevDependencies {

@@ -99,6 +99,5 @@ jobs:
             - powershell
       script:
         - |
-          echo "FOO - $FOO" &&
-          pwsh -Command "& { \$PSVersionTable.PSVersion }"
-      env: FOO=foo
+          pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" ci &&
+          pwsh -NonInteractive -Command "& { Import-Module ./mise; mise -Version }"
