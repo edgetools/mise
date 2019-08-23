@@ -38,7 +38,7 @@ matrix:
 #   - pwsh -f '${env:TRAVIS_BUILD_DIR}/build.ps1'
 
 script:
-- pwsh -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'fail'
+- pwsh -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'unit'
 
 # after_success:
 #   - pwsh -f '${env:TRAVIS_BUILD_DIR}/deploy.ps1'
