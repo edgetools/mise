@@ -34,7 +34,7 @@ matrix:
 #   - pwsh -f '${env:TRAVIS_BUILD_DIR}/build.ps1'
 
 script:
-  - pwsh -version
+  - pwsh-preview -version; pwsh -version
   # - pwsh -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'test'
 
 # after_success:
