@@ -19,7 +19,7 @@ matrix:
             confinement: classic
             channel: latest/stable
       before_install:
-        - sudo ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
+        - sudo ln -s "$(which pwsh-preview)" /usr/local/bin/pwsh
         - ls -la /usr/local/bin/
     - os: osx
       before_install:
@@ -35,7 +35,7 @@ matrix:
 #   - pwsh -f '${env:TRAVIS_BUILD_DIR}/build.ps1'
 
 script:
-  - false # pwsh -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'test'
+  - pwsh -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'test'
 
 # after_success:
 #   - pwsh -f '${env:TRAVIS_BUILD_DIR}/deploy.ps1'
