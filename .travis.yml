@@ -12,7 +12,8 @@ matrix:
             confinement: classic
             channel: latest/stable
       script:
-        - pwsh -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'test'
+        - pwsh -Command "& { exit 64 }"
+        # - pwsh -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'test'
     - os: linux
       dist: bionic
       addons:
@@ -21,17 +22,20 @@ matrix:
             confinement: classic
             channel: latest/stable
       script:
-        - pwsh-preview -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'test'
+        - pwsh-preview -Command "& { exit 64 }"
+        # - pwsh-preview -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'test'
     - os: osx
       before_install:
         - HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell
       script:
-        - pwsh -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'test'
+        - pwsh -Command "& { exit 64 }"
+        # - pwsh -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'test'
     - os: osx
       before_install:
         - HOMEBREW_NO_AUTO_UPDATE=1 brew tap Homebrew/cask-versions && HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview
       script:
-        - pwsh-preview -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'test'
+        - pwsh-preview -Command "& { exit 64 }"
+        # - pwsh-preview -File "${TRAVIS_BUILD_DIR}/pake.ps1" 'test'
 
 # install:
 #   - pwsh -f '${env:TRAVIS_BUILD_DIR}/install-dependencies.ps1'
