@@ -24,7 +24,7 @@ function Get-FilesForTestCoverage {
   return $scriptFiles
 }
 
-function Update-ModuleManifestForCI {
+function Update-ModuleManifestForRelease {
   # initial args
   $manifest_args = @{
     AliasesToExport = 'mise'
@@ -144,19 +144,19 @@ function Invoke-MakeTarget {
     'dep' {
       Install-DevDependencies
     }
-    # ci
-    'ci' {
-      Update-ModuleManifestForCI
+    # prepare-release
+    'prepare-release' {
+      Update-ModuleManifestForRelease
     }
-    # publish
-    'publish' {
-      Write-Host 'Publishing ...'
+    # publish-release
+    'publish-release' {
+      Write-Host 'Publishing Release...'
       Publish-Module `
         -ErrorAction Stop `
         -Force `
         -NuGetApiKey ${env:NUGET_API_KEY} `
         -Path $SOURCE_MODULE_PATH
-      Write-Host -ForegroundColor Green 'Published!'
+      Write-Host -ForegroundColor Green 'Release Published!'
     }
   }
 }
