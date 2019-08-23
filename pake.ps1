@@ -20,21 +20,21 @@ function Get-ScriptFiles {
 
 function Invoke-MakeTarget {
   switch ($args[0]) {
-    # fail
-    'fail' {
-      exit 64
-    }
     # test
     'test' {
       Invoke-MakeTargets 'unit' 'systest'
     }
     # unit tests
     'unit' {
-      Invoke-Pester -CodeCoverage (Get-ScriptFiles) -Tag 'unit' -EnableExit
+      if ((Invoke-Pester -CodeCoverage (Get-ScriptFiles) -Tag 'unit' -PassThru).FailedCount -gt 0) {
+        throw "tests failed"
+      }
     }
     # system tests
     'systest' {
-      Invoke-Pester -Tag 'system' -EnableExit
+      if ((Invoke-Pester -Tag 'system' -PassThru).FailedCount -gt 0) {
+        throw "tests failed"
+      }
     }
     # install
     'install' {
@@ -82,8 +82,21 @@ function Invoke-MakeTarget {
 }
 
 function Invoke-MakeTargets {
-  foreach ($target in $args) {
-    Invoke-MakeTarget $target
+  [bool]$invocation_results = @()
+  try {
+    # invoke each make target
+    foreach ($target in $args) {
+      Invoke-MakeTarget $target
+      $invocation_results += $?
+    }
+    # check if any of the targets failed
+    if ($invocation_results -contains $false) {
+      exit 64
+    }
+  }
+  catch {
+    Write-Error $_
+    exit 64
   }
 }
 
