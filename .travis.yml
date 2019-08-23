@@ -74,6 +74,7 @@ script:
 jobs:
   include:
     - stage: publish
+      if: branch =~ /(master|dev)/
       os: linux
       dist: bionic
       addons:
