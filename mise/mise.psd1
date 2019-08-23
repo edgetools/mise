@@ -30,7 +30,7 @@ CompanyName = 'github.com/edgetools'
 Copyright = '(c) 2019 github.com/edgetools. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'provides an interface for executing common service orchestration tasks'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '6.2'
