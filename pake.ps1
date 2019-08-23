@@ -11,10 +11,11 @@ Set-Variable -Option Constant -Name SOURCE_MODULE_PATH -Value "${PWD}/mise"
 
 # functions
 # ======================================================================================================================
-function Get-ScriptFiles {
+function Get-FilesForTestCoverage {
   $scriptFiles = [System.Collections.Generic.List[System.Object]]::new()
-  # get .ps1 scripts but ignore test files
-  $scriptFiles.AddRange(@(Get-ChildItem -LiteralPath $PWD -Recurse -File -Filter '*.ps1' -Exclude '*.tests.ps1'))
+  # get .ps1 scripts but ignore test and pake files
+  $scriptFiles.AddRange(
+    @(Get-ChildItem -LiteralPath $PWD -Recurse -File -Filter '*.ps1' -Exclude '*.tests.ps1','pake.ps1'))
   # get .psm1 module files
   $scriptFiles.AddRange(@(Get-ChildItem -LiteralPath $PWD -Recurse -File -Filter '*.psm1'))
   return $scriptFiles
@@ -50,7 +51,7 @@ function Invoke-MakeTarget {
     }
     # unit tests
     'unit' {
-      if ((Invoke-Pester -CodeCoverage (Get-ScriptFiles) -Tag 'unit' -PassThru).FailedCount -gt 0) {
+      if ((Invoke-Pester -CodeCoverage (Get-FilesForTestCoverage) -Tag 'unit' -PassThru).FailedCount -gt 0) {
         throw "unit tests failed"
       }
     }
