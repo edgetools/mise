@@ -2,6 +2,8 @@ language: minimal
 
 matrix:
   include:
+
+    # linux - pwsh
     - os: linux
       dist: bionic
       addons:
@@ -11,6 +13,11 @@ matrix:
               key_url: "https://packages.microsoft.com/keys/microsoft.asc"
           packages:
             - powershell
+      cache:
+        directories:
+          - $HOME/.local/share/powershell/Modules
+
+    # linux - pwsh-preview
     - os: linux
       dist: bionic
       addons:
@@ -20,11 +27,17 @@ matrix:
               key_url: "https://packages.microsoft.com/keys/microsoft.asc"
           packages:
             - powershell-preview
+      cache:
+        directories:
+          - $HOME/.local/share/powershell/Modules
       before_install:
         - sudo ln -s /usr/bin/pwsh-preview /usr/bin/pwsh
+
+    # osx - pwsh
     - os: osx
       cache:
         directories:
+          - $HOME/.local/share/powershell/Modules
           - /usr/local/Homebrew
           - $HOME/Library/Caches/Homebrew
       before_cache:
@@ -34,9 +47,12 @@ matrix:
           HOMEBREW_AUTO_UPDATE_SECS=86400 brew update &&
           HOMEBREW_NO_AUTO_UPDATE=1 brew config &&
           HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell
+
+    # osx - pwsh-preview
     - os: osx
       cache:
         directories:
+          - $HOME/.local/share/powershell/Modules
           - /usr/local/Homebrew
           - $HOME/Library/Caches/Homebrew
       before_cache:
@@ -48,10 +64,6 @@ matrix:
           HOMEBREW_NO_AUTO_UPDATE=1 brew config &&
           HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview &&
           ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
-
-cache:
-  directories:
-    - $HOME/.local/share/powershell/Modules
 
 install:
   - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
