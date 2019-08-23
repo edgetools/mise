@@ -26,11 +26,11 @@ function Invoke-MakeTarget {
     }
     # unit tests
     'unit' {
-      Invoke-Pester -CodeCoverage (Get-ScriptFiles) -Tag 'unit'
+      Invoke-Pester -CodeCoverage (Get-ScriptFiles) -Tag 'unit' -ErrorAction 'Stop'
     }
     # system tests
     'systest' {
-      Invoke-Pester -Tag 'system'
+      Invoke-Pester -Tag 'system' -ErrorAction 'Stop'
     }
     # install
     'install' {
