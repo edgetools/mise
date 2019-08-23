@@ -35,9 +35,9 @@ function Install-DevDependencies {
       Write-Host " - '$devDependency' installing ..."
       # disable the progress bar while installing
       $_progressPreference = $ProgressPreference
-      $ProgressPreference = 'SilentlyContinue'
+      $Global:ProgressPreference = 'SilentlyContinue'
       Install-Module -Name $devDependency -AcceptLicense -Force -Verbose -ErrorAction Stop
-      $ProgressPreference = $_progressPreference
+      $Global:ProgressPreference = $_progressPreference
     }
   }
   Write-Host "done"
