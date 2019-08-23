@@ -23,7 +23,8 @@ matrix:
         packages:
         - powershell-preview
     before_install:
-    - sudo ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
+    - sudo ln -s $(which pwsh-preview) /usr/local/bin/pwsh
+    - ls -la /usr/local/bin/
   - os: osx
     before_install:
     - HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell
