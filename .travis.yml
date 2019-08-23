@@ -91,7 +91,7 @@ jobs:
 
     # publish - linux - pwsh
     - stage: publish
-      if: branch = master
+      if: branch = master AND type = push
       os: linux
       dist: bionic
       addons:
