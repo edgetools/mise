@@ -2,71 +2,90 @@ language: minimal
 
 jobs:
   include:
+
+    # test - linux - pwsh
     - stage: test
-      matrix:
-        include:
-          # linux - pwsh
-          - os: linux
-            dist: bionic
-            addons:
-              apt:
-                sources:
-                  - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/18.04/prod bionic main"
-                    key_url: "https://packages.microsoft.com/keys/microsoft.asc"
-                packages:
-                  - powershell
-            cache:
-              directories:
-                - $HOME/.local/share/powershell/Modules
-          # linux - pwsh-preview
-          - os: linux
-            dist: bionic
-            addons:
-              apt:
-                sources:
-                  - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/18.04/prod bionic main"
-                    key_url: "https://packages.microsoft.com/keys/microsoft.asc"
-                packages:
-                  - powershell-preview
-            cache:
-              directories:
-                - $HOME/.local/share/powershell/Modules
-            before_install:
-              - sudo ln -s /usr/bin/pwsh-preview /usr/bin/pwsh
-          # osx - pwsh
-          - os: osx
-            cache:
-              directories:
-                - $HOME/.local/share/powershell/Modules
-                - /usr/local/Homebrew
-                - $HOME/Library/Caches/Homebrew
-            before_cache:
-              - HOMEBREW_NO_AUTO_UPDATE=1 brew cleanup
-            before_install:
-              - |
-                HOMEBREW_AUTO_UPDATE_SECS=86400 brew update &&
-                HOMEBREW_NO_AUTO_UPDATE=1 brew config &&
-                HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell
-          # osx - pwsh-preview
-          - os: osx
-            cache:
-              directories:
-                - $HOME/.local/share/powershell/Modules
-                - /usr/local/Homebrew
-                - $HOME/Library/Caches/Homebrew
-            before_cache:
-              - HOMEBREW_NO_AUTO_UPDATE=1 brew cleanup
-            before_install:
-              - |
-                HOMEBREW_NO_AUTO_UPDATE=1 brew tap Homebrew/cask-versions &&
-                HOMEBREW_AUTO_UPDATE_SECS=86400 brew update &&
-                HOMEBREW_NO_AUTO_UPDATE=1 brew config &&
-                HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview &&
-                ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
+      os: linux
+      dist: bionic
+      addons:
+        apt:
+          sources:
+            - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/18.04/prod bionic main"
+              key_url: "https://packages.microsoft.com/keys/microsoft.asc"
+          packages:
+            - powershell
+      cache:
+        directories:
+          - $HOME/.local/share/powershell/Modules
       install:
         - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
       script:
         - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" unit
+
+    # test - linux - pwsh-preview
+    - stage: test
+      os: linux
+      dist: bionic
+      addons:
+        apt:
+          sources:
+            - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/18.04/prod bionic main"
+              key_url: "https://packages.microsoft.com/keys/microsoft.asc"
+          packages:
+            - powershell-preview
+      cache:
+        directories:
+          - $HOME/.local/share/powershell/Modules
+      before_install:
+        - sudo ln -s /usr/bin/pwsh-preview /usr/bin/pwsh
+      install:
+        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
+      script:
+        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" unit
+
+    # test - osx - pwsh
+    - stage: test
+      os: osx
+      cache:
+        directories:
+          - $HOME/.local/share/powershell/Modules
+          - /usr/local/Homebrew
+          - $HOME/Library/Caches/Homebrew
+      before_install:
+        - |
+          HOMEBREW_AUTO_UPDATE_SECS=86400 brew update &&
+          HOMEBREW_NO_AUTO_UPDATE=1 brew config &&
+          HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell
+      install:
+        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
+      script:
+        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" unit
+      before_cache:
+        - HOMEBREW_NO_AUTO_UPDATE=1 brew cleanup
+
+    # test - osx - pwsh-preview
+    - stage: test
+      os: osx
+      cache:
+        directories:
+          - $HOME/.local/share/powershell/Modules
+          - /usr/local/Homebrew
+          - $HOME/Library/Caches/Homebrew
+      before_install:
+        - |
+          HOMEBREW_NO_AUTO_UPDATE=1 brew tap Homebrew/cask-versions &&
+          HOMEBREW_AUTO_UPDATE_SECS=86400 brew update &&
+          HOMEBREW_NO_AUTO_UPDATE=1 brew config &&
+          HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview &&
+          ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
+      install:
+        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
+      script:
+        - pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" unit
+      before_cache:
+        - HOMEBREW_NO_AUTO_UPDATE=1 brew cleanup
+
+    # publish - linux - pwsh
     - stage: publish
       if: branch =~ /(master|dev)/
       os: linux
