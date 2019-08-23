@@ -151,6 +151,7 @@ function Invoke-MakeTarget {
     }
     # publish
     'publish' {
+      Write-Host 'Publishing ...'
       Publish-Module `
         -AllowPrerelease `
         -ErrorAction Stop `
@@ -162,6 +163,9 @@ function Invoke-MakeTarget {
 }
 
 function Invoke-MakeTargets {
+  Write-Host "target args:"
+  Write-Host "-" $args
+  Write-Host "target length: $($args.Length)"
   [bool]$invocation_results = @()
   try {
     # invoke each make target
@@ -185,4 +189,7 @@ function Invoke-MakeTargets {
 
 # make targets dispatch
 
+Write-Host "input args:"
+Write-Host "-" $args
+Write-Host "input length: $($args.Length)"
 Invoke-MakeTargets @args
