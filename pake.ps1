@@ -178,9 +178,6 @@ function Invoke-MakeTarget {
       test -n \"${GIT_DEPLOY_KEY}\"
       eval \"$(ssh-agent -s)\"
       echo \"${GIT_DEPLOY_KEY}\" > /tmp/deploy_rsa
-      # REMOVE BELOW -- DEBUG -- USING INVALID KEY
-      cat /tmp/deploy_rsa
-      # REMOVE ABOVE -- DEBUG -- USING INVALID KEY
       chmod 0600 /tmp/deploy_rsa
       ssh-add /tmp/deploy_rsa
       export GIT_COMMITTER_NAME='Travis CI'
