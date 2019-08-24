@@ -3,103 +3,101 @@ language: minimal
 jobs:
   include:
 
-    # test - linux - pwsh
-    - stage: test
-      if: (branch = master) AND (type = push OR type = pull_request) AND (tag IS blank)
-      os: linux
-      dist: bionic
-      addons:
-        apt:
-          sources:
-            - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/18.04/prod bionic main"
-              key_url: "https://packages.microsoft.com/keys/microsoft.asc"
-          packages:
-            - expect
-            - powershell
-      cache:
-        directories:
-          - $HOME/.local/share/powershell/Modules
-      install:
-        - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
-      script:
-        - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" test
+    # # test - linux - pwsh
+    # - stage: test
+    #   if: (branch = master) AND (type = push OR type = pull_request) AND (tag IS blank)
+    #   os: linux
+    #   dist: bionic
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/18.04/prod bionic main"
+    #           key_url: "https://packages.microsoft.com/keys/microsoft.asc"
+    #       packages:
+    #         - expect
+    #         - powershell
+    #   cache:
+    #     directories:
+    #       - $HOME/.local/share/powershell/Modules
+    #   install:
+    #     - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
+    #   script:
+    #     - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" test
 
-    # test - linux - pwsh-preview
-    - stage: test
-      if: (branch = master) AND (type = push OR type = pull_request) AND (tag IS blank)
-      os: linux
-      dist: bionic
-      addons:
-        apt:
-          sources:
-            - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/18.04/prod bionic main"
-              key_url: "https://packages.microsoft.com/keys/microsoft.asc"
-          packages:
-            - expect
-            - powershell-preview
-      cache:
-        directories:
-          - $HOME/.local/share/powershell/Modules
-      before_install:
-        - sudo ln -s /usr/bin/pwsh-preview /usr/bin/pwsh
-      install:
-        - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
-      script:
-        - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" test
+    # # test - linux - pwsh-preview
+    # - stage: test
+    #   if: (branch = master) AND (type = push OR type = pull_request) AND (tag IS blank)
+    #   os: linux
+    #   dist: bionic
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/18.04/prod bionic main"
+    #           key_url: "https://packages.microsoft.com/keys/microsoft.asc"
+    #       packages:
+    #         - expect
+    #         - powershell-preview
+    #   cache:
+    #     directories:
+    #       - $HOME/.local/share/powershell/Modules
+    #   before_install:
+    #     - sudo ln -s /usr/bin/pwsh-preview /usr/bin/pwsh
+    #   install:
+    #     - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
+    #   script:
+    #     - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" test
 
-    # test - osx - pwsh
-    - stage: test
-      if: (branch = master) AND (type = push OR type = pull_request) AND (tag IS blank)
-      os: osx
-      cache:
-        directories:
-          - $HOME/.local/share/powershell/Modules
-          - /usr/local/Homebrew
-          - $HOME/Library/Caches/Homebrew
-      before_install:
-        - |
-          HOMEBREW_AUTO_UPDATE_SECS=86400 brew update &&
-          HOMEBREW_NO_AUTO_UPDATE=1 brew config &&
-          HOMEBREW_NO_AUTO_UPDATE=1 brew install expect &&
-          HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell
-      install:
-        - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
-      script:
-        - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" test
-      before_cache:
-        - HOMEBREW_NO_AUTO_UPDATE=1 unbuffer brew cleanup
+    # # test - osx - pwsh
+    # - stage: test
+    #   if: (branch = master) AND (type = push OR type = pull_request) AND (tag IS blank)
+    #   os: osx
+    #   cache:
+    #     directories:
+    #       - $HOME/.local/share/powershell/Modules
+    #       - /usr/local/Homebrew
+    #       - $HOME/Library/Caches/Homebrew
+    #   before_install:
+    #     - |
+    #       HOMEBREW_AUTO_UPDATE_SECS=86400 brew update &&
+    #       HOMEBREW_NO_AUTO_UPDATE=1 brew config &&
+    #       HOMEBREW_NO_AUTO_UPDATE=1 brew install expect &&
+    #       HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell
+    #   install:
+    #     - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
+    #   script:
+    #     - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" test
+    #   before_cache:
+    #     - HOMEBREW_NO_AUTO_UPDATE=1 unbuffer brew cleanup
 
-    # test - osx - pwsh-preview
-    - stage: test
-      if: (branch = master) AND (type = push OR type = pull_request) AND (tag IS blank)
-      os: osx
-      cache:
-        directories:
-          - $HOME/.local/share/powershell/Modules
-          - /usr/local/Homebrew
-          - $HOME/Library/Caches/Homebrew
-      before_install:
-        - |
-          HOMEBREW_NO_AUTO_UPDATE=1 brew tap Homebrew/cask-versions &&
-          HOMEBREW_AUTO_UPDATE_SECS=86400 brew update &&
-          HOMEBREW_NO_AUTO_UPDATE=1 brew config &&
-          HOMEBREW_NO_AUTO_UPDATE=1 brew install expect &&
-          HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview &&
-          ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
-      install:
-        - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
-      script:
-        - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" test
-      before_cache:
-        - HOMEBREW_NO_AUTO_UPDATE=1 unbuffer brew cleanup
+    # # test - osx - pwsh-preview
+    # - stage: test
+    #   if: (branch = master) AND (type = push OR type = pull_request) AND (tag IS blank)
+    #   os: osx
+    #   cache:
+    #     directories:
+    #       - $HOME/.local/share/powershell/Modules
+    #       - /usr/local/Homebrew
+    #       - $HOME/Library/Caches/Homebrew
+    #   before_install:
+    #     - |
+    #       HOMEBREW_NO_AUTO_UPDATE=1 brew tap Homebrew/cask-versions &&
+    #       HOMEBREW_AUTO_UPDATE_SECS=86400 brew update &&
+    #       HOMEBREW_NO_AUTO_UPDATE=1 brew config &&
+    #       HOMEBREW_NO_AUTO_UPDATE=1 brew install expect &&
+    #       HOMEBREW_NO_AUTO_UPDATE=1 brew cask install powershell-preview &&
+    #       ln -s /usr/local/bin/pwsh-preview /usr/local/bin/pwsh
+    #   install:
+    #     - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" dep
+    #   script:
+    #     - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" test
+    #   before_cache:
+    #     - HOMEBREW_NO_AUTO_UPDATE=1 unbuffer brew cleanup
 
     # publish - linux - pwsh
     - stage: publish
-      if: (branch = master) AND (type = push) AND (tag IS blank)
+      if: (branch = master) AND (type = pull_request) AND (tag IS blank)
       os: linux
       dist: bionic
-      env:
-        - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
       addons:
         apt:
           sources:
@@ -110,4 +108,5 @@ jobs:
             - expect
             - powershell
       script:
-        - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" prepare-release publish-release push-release-tag
+        - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" prepare-release push-release-tag
+        # - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" prepare-release publish-release push-release-tag
