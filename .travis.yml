@@ -104,7 +104,7 @@ jobs:
             - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/18.04/prod bionic main"
               key_url: "https://packages.microsoft.com/keys/microsoft.asc"
       before_install:
-        - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true DOTNET_CLI_TELEMETRY_OPTOUT=1 sudo -E apt-get -yq --no-install-suggests --no-install-recommends $(travis_apt_get_options) install dotnet-sdk-2.2 expect powershell
+        - travis_apt_get_update && DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true DOTNET_CLI_TELEMETRY_OPTOUT=1 sudo -E apt-get -yq --no-install-suggests --no-install-recommends $(travis_apt_get_options) install dotnet-sdk-2.2 expect powershell
       script:
         - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" prepare-release
         # - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" prepare-release publish-release push-release-tag
