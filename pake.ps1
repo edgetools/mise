@@ -183,6 +183,7 @@ function Invoke-MakeTarget {
         export GIT_COMMITTER_NAME='edgetools-ci'
         export GIT_COMMITTER_EMAIL='ethan.edwards.professional+edgetools.ci@gmail.com'
         git tag \"${GIT_TAG}\" -a -m \"mise v${GIT_TAG}\"
+        git remote -v
         git push origin \"${GIT_TAG}\"
       } || {
         rm \"${GIT_CREDENTIALS_FILE}\" || true
