@@ -98,8 +98,6 @@ jobs:
       if: (branch = master) AND (type = push) AND (tag IS blank)
       os: linux
       dist: bionic
-      env:
-        - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
       addons:
         apt:
           sources:
