@@ -175,20 +175,12 @@ function Invoke-MakeTarget {
 @'
       set -e
       test -n \"${GIT_TAG}\"
-      test -n \"${GIT_ACCESS_TOKEN}\"
-      GIT_CREDENTIALS_FILE=\"${HOME}/.git-credentials\"
-      ! test -e \"${GIT_CREDENTIALS_FILE}\"
-      {
-        echo \"https://${GIT_ACCESS_TOKEN}:x-oauth-basic@github.com\" > \"${GIT_CREDENTIALS_FILE}\"
-        export GIT_COMMITTER_NAME='edgetools-ci'
-        export GIT_COMMITTER_EMAIL='ethan.edwards.professional+edgetools.ci@gmail.com'
-        git tag \"${GIT_TAG}\" -a -m \"mise v${GIT_TAG}\"
-        git remote -v
-        git push origin \"${GIT_TAG}\"
-      } || {
-        rm \"${GIT_CREDENTIALS_FILE}\" || true
-        false
-      }
+      test -n \"${GITHUB_ACCESS_TOKEN}\"
+      test -n \"${GITHUB_USERNAME}\"
+      export GIT_COMMITTER_NAME='edgetools-ci'
+      export GIT_COMMITTER_EMAIL='ethan.edwards.professional+edgetools.ci@gmail.com'
+      git tag \"${GIT_TAG}\" -a -m \"mise v${GIT_TAG}\"
+      git -c 'credential.helper=!f() { sleep 1; printf \"%s\\n\" \"username=${GITHUB_USERNAME}\"; printf \"%s\\n\" \"password=${GITHUB_ACCESS_TOKEN}\"; }; f' push origin \"${GIT_TAG}\"
 '@
       if ($LASTEXITCODE -ne 0) {
         throw 'script exited with non-zero exit code'
