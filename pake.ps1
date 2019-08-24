@@ -169,19 +169,21 @@ function Invoke-MakeTarget {
       $env:GIT_TAG = Invoke-MiseCli -Version -ErrorAction Stop
       Invoke-MakeTarget 'unload'
       Write-Host "Pushing Release Tag $env:GIT_TAG ..."
+      # escaping double quotes in the script
+      # due to https://github.com/PowerShell/PowerShell/issues/10440
       & /usr/bin/env bash -c `
 @'
       set -e
-      test -n "${GIT_TAG}"
-      test -n "${GIT_DEPLOY_KEY}"
-      eval "$(ssh-agent -s)"
-      echo "${GIT_DEPLOY_KEY}" > /tmp/deploy_rsa
+      test -n \"${GIT_TAG}\"
+      test -n \"${GIT_DEPLOY_KEY}\"
+      eval \"$(ssh-agent -s)\"
+      echo \"${GIT_DEPLOY_KEY}\" > /tmp/deploy_rsa
       chmod 0600 /tmp/deploy_rsa
       ssh-add /tmp/deploy_rsa
       export GIT_COMMITTER_NAME='Travis CI'
       export GIT_COMMITTER_EMAIL='builds@travis-ci.com'
-      git tag "${GIT_TAG}" -a -m "mise v${GIT_TAG}"
-      git push origin "${GIT_TAG}"
+      git tag \"${GIT_TAG}\" -a -m \"mise v${GIT_TAG}\"
+      git push origin \"${GIT_TAG}\"
       rm /tmp/deploy_rsa
 '@
       if ($LASTEXITCODE -ne 0) {
