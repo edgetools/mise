@@ -176,15 +176,16 @@ function Invoke-MakeTarget {
       set -e
       test -n \"${GIT_TAG}\"
       test -n \"${GIT_ACCESS_TOKEN}\"
-      ! test -e \"${HOME}\.git-credentials\"
+      GIT_CREDENTIALS_FILE=\"${HOME}/.git-credentials\"
+      ! test -e \"${GIT_CREDENTIALS_FILE}\"
       {
-        echo \"https://${GIT_ACCESS_TOKEN}:x-oauth-basic@github.com\" > \"${HOME}\.git-credentials\"
+        echo \"https://${GIT_ACCESS_TOKEN}:x-oauth-basic@github.com\" > \"${GIT_CREDENTIALS_FILE}\"
         export GIT_COMMITTER_NAME='edgetools-ci'
         export GIT_COMMITTER_EMAIL='ethan.edwards.professional+edgetools.ci@gmail.com'
         git tag \"${GIT_TAG}\" -a -m \"mise v${GIT_TAG}\"
         git push origin \"${GIT_TAG}\"
       } || {
-        rm \"${HOME}\.git-credentials\" || true
+        rm \"${GIT_CREDENTIALS_FILE}\" || true
         false
       }
 '@
