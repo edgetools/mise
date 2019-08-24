@@ -1,6 +1,4 @@
 
-# cannot automatically determine script path due to https://github.com/PowerShell/PowerShell/issues/4217
-
 $mise = Join-Path $PSScriptRoot 'mise'
 
 Describe 'mise' -Tag 'system' {
