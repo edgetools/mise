@@ -41,11 +41,13 @@ function Update-ModuleManifestForRelease {
   if (Test-Path -LiteralPath $VERSION_FILE_PATH) {
     $manifest_args['ModuleVersion'] = Get-Content -LiteralPath $VERSION_FILE_PATH -ErrorAction Stop
     # get prerelease file, if present
+    $prerelease = ''
     if (Test-Path -LiteralPath $PRERELEASE_FILE_PATH) {
       $prerelease = Get-Content -LiteralPath $PRERELEASE_FILE_PATH -ErrorAction Stop
       $prerelease += ${env:TRAVIS_BUILD_NUMBER}
       $manifest_args['Prerelease'] = $prerelease
     }
+    $manifest_args['Prerelease'] = $prerelease
   } else {
     throw [System.IO.FileNotFoundException] "$VERSION_FILE_PATH not found."
   }
