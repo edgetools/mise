@@ -5,7 +5,7 @@ jobs:
 
     # test - linux - pwsh
     - stage: test
-      if: branch = master AND (type = push OR type = pull_request)
+      if: (branch = master) AND (type = push OR type = pull_request) AND (tag IS blank)
       os: linux
       dist: bionic
       addons:
@@ -26,7 +26,7 @@ jobs:
 
     # test - linux - pwsh-preview
     - stage: test
-      if: branch = master AND (type = push OR type = pull_request)
+      if: (branch = master) AND (type = push OR type = pull_request) AND (tag IS blank)
       os: linux
       dist: bionic
       addons:
@@ -49,7 +49,7 @@ jobs:
 
     # test - osx - pwsh
     - stage: test
-      if: branch = master AND (type = push OR type = pull_request)
+      if: (branch = master) AND (type = push OR type = pull_request) AND (tag IS blank)
       os: osx
       cache:
         directories:
@@ -71,7 +71,7 @@ jobs:
 
     # test - osx - pwsh-preview
     - stage: test
-      if: branch = master AND (type = push OR type = pull_request)
+      if: (branch = master) AND (type = push OR type = pull_request) AND (tag IS blank)
       os: osx
       cache:
         directories:
@@ -95,7 +95,7 @@ jobs:
 
     # publish - linux - pwsh
     - stage: publish
-      if: branch = master AND type = push
+      if: (branch = master) AND (type = push) AND (tag IS blank)
       os: linux
       dist: bionic
       addons:
@@ -108,4 +108,4 @@ jobs:
             - expect
             - powershell
       script:
-        - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" prepare-release publish-release
+        - unbuffer pwsh -NonInteractive -File "${TRAVIS_BUILD_DIR}/pake.ps1" prepare-release publish-release push-release-tag

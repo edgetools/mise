@@ -45,6 +45,11 @@ function Update-ModuleManifestForRelease {
       $prerelease = Get-Content -LiteralPath $PRERELEASE_FILE_PATH -ErrorAction Stop
       $prerelease += ${env:TRAVIS_BUILD_NUMBER}
       $manifest_args['Prerelease'] = $prerelease
+    } else {
+      # as of the time this line was written
+      # setting to single space ' ' will remove the prerelease in PSData, if present
+      # using just '' or $none, will not
+      $manifest_args['Prerelease'] = ' '
     }
   } else {
     throw [System.IO.FileNotFoundException] "$VERSION_FILE_PATH not found."
@@ -134,11 +139,11 @@ function Invoke-MakeTarget {
     }
     # load
     'load' {
-      Import-Module $SOURCE_MODULE_PATH -Force -Verbose
+      Import-Module $SOURCE_MODULE_PATH -Force -Verbose -ErrorAction Stop
     }
     # unload
     'unload' {
-      Remove-Module -Name 'mise' -Verbose
+      Remove-Module -Name 'mise' -Verbose -ErrorAction Stop
     }
     # dep
     'dep' {
@@ -157,6 +162,32 @@ function Invoke-MakeTarget {
         -NuGetApiKey ${env:NUGET_API_KEY} `
         -Path $SOURCE_MODULE_PATH
       Write-Host -ForegroundColor Green 'Release Published!'
+    }
+    # push-release-tag
+    'push-release-tag' {
+      Invoke-MakeTarget 'load'
+      $env:GIT_TAG = Invoke-MiseCli -Version -ErrorAction Stop
+      Invoke-MakeTarget 'unload'
+      Write-Host "Pushing Release Tag $env:GIT_TAG ..."
+      & /usr/bin/env bash -c `
+@'
+      set -e
+      test -n $GIT_TAG
+      test -n $GIT_DEPLOY_KEY
+      eval "$(ssh-agent -s)"
+      echo "${GIT_DEPLOY_KEY}" > /tmp/deploy_rsa
+      chmod 0600 /tmp/deploy_rsa
+      ssh-add /tmp/deploy_rsa
+      export GIT_COMMITTER_NAME='Travis CI'
+      export GIT_COMMITTER_EMAIL='builds@travis-ci.com'
+      git tag $GIT_TAG -a -m "mise v${GIT_TAG}"
+      git push origin $GIT_TAG
+      rm /tmp/deploy_rsa
+'@
+      if ($LASTEXITCODE -ne 0) {
+        throw 'script exited with non-zero exit code'
+      }
+      Write-Host -ForegroundColor Green 'Release Tag Pushed!'
     }
   }
 }

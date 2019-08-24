@@ -30,10 +30,8 @@ fi
 mise_shell() {
   cat <<EOL
 & {
-  # add MODULE_DIR to PSModulePath
-  \$env:PSModulePath = "${MODULE_DIR}:\${env:PSModulePath}"
   # import mise
-  Import-Module mise -Force -ErrorAction Stop
+  Import-Module '${MODULE_DIR}' -Force -ErrorAction Stop
   # enter the shell
   Enter-MiseShell
   if (\$? -eq \$false) {
@@ -46,10 +44,8 @@ EOL
 mise_command() {
   cat <<EOL
 & {
-  # add MODULE_DIR to PSModulePath
-  \$env:PSModulePath = "${MODULE_DIR}:\${env:PSModulePath}"
   # import mise
-  Import-Module mise -Force -ErrorAction Stop
+  Import-Module '${MODULE_DIR}' -Force -ErrorAction Stop
   # invoke the cli, passing any args
   Invoke-MiseCli${*+" ${*}"}
   # if (\$? -eq \$false) {

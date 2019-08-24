@@ -1,7 +1,7 @@
 
 # cannot automatically determine script path due to https://github.com/PowerShell/PowerShell/issues/4217
 
-$mise = Join-Path $pwd 'bin' 'mise'
+$mise = Join-Path $PSScriptRoot 'mise'
 
 Describe 'mise' -Tag 'system' {
   It 'Given -Version, prints a valid Version' {
