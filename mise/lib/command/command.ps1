@@ -3,20 +3,14 @@ function Invoke-MiseGetCommand {
 }
 
 function Invoke-MiseEnCommand {
-  [CmdletBinding()]
+  [CmdletBinding(PositionalBinding=$false)]
   Param(
     [Parameter(
-      Mandatory=$true,
-      Position=0
-    )]
-    [string[]]$Target,
-
-    [Parameter(
-      Mandatory=$true,
-      Position=1,
+      Mandatory=$false,
+      Position=0,
       ValueFromRemainingArguments
     )]
-    [string[]]$Remainder,
+    [string[]]$CommandLine,
 
     [Parameter(
       Mandatory=$true
@@ -24,15 +18,15 @@ function Invoke-MiseEnCommand {
     [psobject]$Context
   )
 
-  # Write-Host "en args: $Remainder"
-  Write-Host "en target: $Target"
-  Write-Host "en remainder: $Remainder"
+  Write-Host "en command line: $CommandLine"
+  Write-Host "en command line count: $($CommandLine.Count)"
+  Write-Host "en command line length: $($CommandLine.Length)"
+  if ($null -ne $CommandLine) {
+    Write-Host "en command line type: $($CommandLine.GetType())"
+  } else {
+    Write-Host "en command line type: null"
+  }
   Write-Host "en context: $Context"
-
-  # if ($null -eq $Context.Project) {
-  #   # no current context
-  #   # check number of args and set based on that
-  # }
 
   # given no context:
   # - en PROJECT [ENV] [SERVICE]
@@ -40,6 +34,32 @@ function Invoke-MiseEnCommand {
   # - en ENV [SERVICE]
   # given env:
   # - en SERVICE
+
+  switch ($CommandLine.Count) {
+    0 {
+      # reset context
+      Reset-MiseContext
+    }
+    1 {
+      $Context.Project = $CommandLine[0]
+    }
+    2 {
+      $Context.Project = $CommandLine[0]
+      $Context.Env = $CommandLine[1]
+    }
+    3 {
+      $Context.Project = $CommandLine[0]
+      $Context.Env = $CommandLine[1]
+      $Context.Service = $CommandLine[2]
+    }
+  }
+
+  # if ($null -eq $Context.Project) {
+  #   # no current context
+  #   # check number of args and set based on that
+  # } else {
+
+  # }
 
   # $currentContext = Get-MiseContext
   # Write-Host "got context: $currentContext"

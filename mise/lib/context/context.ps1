@@ -38,3 +38,9 @@ function Get-MiseContext {
 function Set-MiseContext {
   $script:MiseContext = $args[0]
 }
+
+function Reset-MiseContext {
+  $script:MiseContext.Project = $null
+  $script:MiseContext.Env = $null
+  $script:MiseContext.Service = $null
+}

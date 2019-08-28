@@ -145,17 +145,22 @@ function Invoke-MiseCli {
   switch ($PSCmdlet.ParameterSetName) {
     'Version' {
       (Get-MiseVersion).ToString()
+      break
     }
     'Help' {
       Get-Help Invoke-MiseCli
+      break
     }
-    'Get' {}
+    'Get' {
+      break
+    }
     'En' {
       if ($null -eq $Remainder) {
         Invoke-MiseEnCommand
       } else {
         Invoke-MiseEnCommand @Remainder
       }
+      break
     }
   }
 }
