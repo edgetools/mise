@@ -5,8 +5,6 @@
 
 # Set-PSDebug -Trace 2
 
-Set-Variable -Option Constant -Name INSTALL_PATH -Value '/usr/local/bin/mise'
-Set-Variable -Option Constant -Name SOURCE_BIN_PATH -Value (Join-Path $PSScriptRoot 'bin' 'mise')
 Set-Variable -Option Constant -Name SOURCE_MODULE_PATH -Value (Join-Path $PSScriptRoot 'mise')
 Set-Variable -Option Constant -Name VERSION_FILE_PATH -Value (Join-Path $PSScriptRoot '.VERSION')
 Set-Variable -Option Constant -Name PRERELEASE_FILE_PATH -Value (Join-Path $PSScriptRoot '.PRERELEASE')
@@ -27,13 +25,7 @@ function Get-FilesForTestCoverage {
 function Update-ModuleManifestForRelease {
   # initial args
   $manifest_args = @{
-    AliasesToExport = 'mise'
     CmdletsToExport = @()
-    FunctionsToExport = @(
-      'Enter-MiseShell',
-      'Get-MiseVersion',
-      'Invoke-MiseCli'
-    )
     Path = (Join-Path $SOURCE_MODULE_PATH 'mise.psd1')
   }
 
@@ -104,38 +96,6 @@ function Invoke-MakeTarget {
       if ((Invoke-Pester -Tag 'system' -PassThru).FailedCount -gt 0) {
         throw "system tests failed"
       }
-    }
-    # install
-    'install' {
-      [bool]$shouldDeleteExisting = $false
-      [bool]$shouldCreateNew = $false
-      # check for existing file
-      if (Test-Path -LiteralPath $INSTALL_PATH -PathType Leaf) {
-        # check if file is a symlink
-        $existingFile = Get-Item -LiteralPath $INSTALL_PATH
-        if (($existingFile.LinkType -cne 'SymbolicLink') `
-            -or ($existingFile.Target -cne $SOURCE_BIN_PATH)) {
-          # if not a symlink, or if symlink not pointing to the correct path
-          # delete and recreate
-          $shouldDeleteExisting = $true
-          $shouldCreateNew = $true
-        }
-      } else {
-        $shouldCreateNew = $true
-      }
-      # remove if needed
-      if ($shouldDeleteExisting -eq $true) {
-        Remove-Item -LiteralPath $INSTALL_PATH -ErrorAction Stop
-      }
-      # create symlink
-      if ($shouldCreateNew -eq $true) {
-        New-Item -Path $INSTALL_PATH -ItemType SymbolicLink -Value $SOURCE_BIN_PATH -ErrorAction Stop
-      }
-    }
-    # uninstall
-    'uninstall' {
-      # remove the symlink
-      Remove-Item -LiteralPath $INSTALL_PATH
     }
     # load
     'load' {
