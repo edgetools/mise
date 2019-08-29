@@ -2,63 +2,34 @@
 
 set -e
 
-MODULE_DIR="$(
+SCRIPT_DIR="$(
   # try to follow symlink
   bin_path="$(
     readlink "$0" || echo "$0"
   )"
   cd "$( dirname "${bin_path}" )" > /dev/null
-  cd ..
   pwd
 )"
 
+SCRIPT_FILE="${SCRIPT_DIR}/mise.ps1"
+
 if [ -n "${DEBUG}" ]
 then
-  echo >&2 "MODULE_DIR: ${MODULE_DIR}"
+  echo >&2 "SCRIPT_DIR: ${SCRIPT_DIR}"
+  echo >&2 "BIN_SCRIPT: ${BIN_SCRIPT}"
 fi
 
 # grab first argument and convert to lowercase
 command_name="$(echo "${1}" | /usr/bin/env tr '[:upper:]' '[:lower:]')"
 shift || :
 
-# ensure first argument starts with a dash
-if [ -n "${command_name}" ] && [ "$(echo "${command_name}" | cut -c1)" != '-' ]
-then
-  command_name="-${command_name}"
-fi
-
-mise_shell() {
-  cat <<EOL
-& {
-  # import mise
-  Import-Module '${MODULE_DIR}' -Force -ErrorAction Stop
-  # enter the shell
-  Enter-MiseShell
-  if (\$? -eq \$false) {
-    exit 1
-  }
-}
-EOL
-}
-
-mise_command() {
-  cat <<EOL
-& {
-  # import mise
-  Import-Module '${MODULE_DIR}' -Force -ErrorAction Stop
-  # invoke the cli, passing any args
-  Invoke-MiseCli${*+" ${*}"}
-  # if (\$? -eq \$false) {
-  #   exit 1
-  # }
-}
-EOL
-}
-
 # set -NoExit if we're running the shell
-if [ "${command_name}" = "-shell" ]
+if [ "${command_name}" = "shell" ]
 then
-  exec /usr/bin/env pwsh -NoExit -Command "$(mise_shell ${@+"${@}"})"
+  exec /usr/bin/env pwsh -Interactive -NoLogo -NoExit -File "${SCRIPT_FILE}" ${command_name+"${command_name}"} ${@+"${@}"}
+elif [ -n "${command_name}" ]
+then
+  exec /usr/bin/env pwsh -NonInteractive -File "${SCRIPT_FILE}" ${command_name+"${command_name}"} ${@+"${@}"}
 else
-  exec /usr/bin/env pwsh -Command "$(mise_command ${command_name+"${command_name}"} ${@+"${@}"})"
+  exec /usr/bin/env pwsh -NonInteractive -File "${SCRIPT_FILE}"
 fi

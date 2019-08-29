@@ -1,7 +1,3 @@
-function Invoke-MiseGetCommand {
-  Write-Host 'hello from get'
-}
-
 function Invoke-MiseEnCommand {
   [CmdletBinding(PositionalBinding=$false)]
   Param(
@@ -13,9 +9,9 @@ function Invoke-MiseEnCommand {
     [string[]]$CommandLine,
 
     [Parameter(
-      Mandatory=$true
+      Mandatory=$false
     )]
-    [psobject]$Context
+    [psobject]$Context = (Get-MiseContext)
   )
 
   Write-Host "en command line: $CommandLine"
@@ -38,10 +34,29 @@ function Invoke-MiseEnCommand {
   switch ($CommandLine.Count) {
     0 {
       # reset context
-      Reset-MiseContext
+      $Context | Reset-MiseContext
     }
     1 {
-      $Context.Project = $CommandLine[0]
+      # 1 arg
+      # - check if we're currently at Project level, Env level, or Service level
+      if ($null -eq $Context.Project) {
+        # no current context
+        # reset and set project
+        $Context | Reset-MiseContext
+        $Context.Project = $CommandLine[0]
+      } else {
+        # there is a project
+        # is there an environment?
+        if ($null -eq $Context.Env) {
+          # no environment
+          # set environment
+          $Context.Env = $CommandLine[0]
+        } else {
+          # there is an environment
+          # set service
+          $Context.Service = $CommandLine[0]
+        }
+      }
     }
     2 {
       $Context.Project = $CommandLine[0]

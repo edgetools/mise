@@ -39,8 +39,58 @@ function Set-MiseContext {
   $script:MiseContext = $args[0]
 }
 
+function Update-MiseContext {
+  [CmdletBinding()]
+  Param(
+    [Parameter(
+      Mandatory=$true,
+      ParameterSetName='Project'
+    )]
+    [string]$Project,
+
+    [Parameter(
+      Mandatory=$true,
+      ParameterSetName='Env'
+    )]
+    [string]$Env,
+
+    [Parameter(
+      Mandatory=$true,
+      ParameterSetName='Service'
+    )]
+    [string]$Service,
+
+    [Parameter(
+      Mandatory=$true,
+      ValueFromPipeline
+    )]
+    [psobject]$Context
+  )
+
+  switch ($PSCmdlet.ParameterSetName) {
+    'Project' {
+      break
+    }
+    'Env' {
+      break
+    }
+    'Service' {
+      break
+    }
+  }
+}
+
 function Reset-MiseContext {
-  $script:MiseContext.Project = $null
-  $script:MiseContext.Env = $null
-  $script:MiseContext.Service = $null
+  [CmdletBinding()]
+  Param(
+    [Parameter(
+      Mandatory=$true,
+      ValueFromPipeline
+    )]
+    [psobject]$Context
+  )
+
+  $Context.Project = $null
+  $Context.Env = $null
+  $Context.Service = $null
 }
