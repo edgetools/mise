@@ -134,15 +134,17 @@ function Move-MiseContextLocation {
   )
 
   # move up for '..'
-  if ($item -ceq '..') {
+  if ($Target -ceq '..') {
     if ($null -ne $Context.Location.Parent) {
       $Context.Location = $Context.Location.Parent
     }
     return
   }
 
+  # get children
+  $children = $Context | Get-MiseContextChildren
   # throw if not a valid child
-  if (-not ($Context | Get-MiseContextChildren).Contains($Target)) {
+  if (($null -eq $children) -or (-not ($Context | Get-MiseContextChildren).Contains($Target))) {
     throw "$Target is not a valid target"
   }
 
@@ -175,6 +177,11 @@ function Move-MiseContextLocation {
 function Get-MiseContextChildren {
   [CmdletBinding()]
   Param(
+    [Parameter(
+      Mandatory=$false
+    )]
+    [string]$Filter,
+
     [Parameter(
       Mandatory=$true,
       ValueFromPipeline

@@ -78,6 +78,7 @@ FunctionsToExport = @(
     'Invoke-MiseEnCommand',
     'Invoke-MiseVersionCommand',
     'Get-MiseContext',
+    'Get-MiseContextChildren',
     'Install-MiseCli',
     'Uninstall-MiseCli'
 )
