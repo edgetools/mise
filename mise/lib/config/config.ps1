@@ -6,7 +6,7 @@
 # variables
 # ======================================================================================================================
 
-New-Variable -Name MiseConfig -Value ([PSCustomObject]@{})
+New-Variable -Name MiseConfig -Value @{}
 
 # functions
 # ======================================================================================================================
@@ -17,6 +17,6 @@ function Get-MiseConfig {
 
 function Import-MiseConfigFile {
   if (Test-Path $args[0]) {
-    $script:MiseConfig = Get-Content -LiteralPath $args[0] | ConvertFrom-Json
+    $script:MiseConfig = Get-Content -LiteralPath $args[0] | ConvertFrom-Json -AsHashtable
   }
 }

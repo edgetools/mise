@@ -21,7 +21,7 @@ try {
   Import-MiseConfigFile (Join-Path $PWD '.mise.json')
 
   # set initial context
-  Set-MiseContext (New-MiseContext)
+  New-MiseContext | Set-MiseContext
 }
 catch {
   throw $_
