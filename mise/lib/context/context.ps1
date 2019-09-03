@@ -67,36 +67,29 @@ function New-MiseContext {
 function New-MiseContextLocation {
   Param(
     [string]$Name = $null,
-    [MiseContextLevel]$ContextLevel = [MiseContextLevel]::Global,
+    [MiseContextLevel]$Level = ([MiseContextLevel]::Global),
     [psobject]$Parent = $null
   )
 
   $newContextLocation = [PSCustomObject]@{
     Name = $Name
-    Level = $ContextLevel
+    Level = $Level
     Parent = $Parent
   }
 
-  # $newContext = [PSCustomObject]@{
-  #   Project = $null
-  #   Env = $null
-  #   Service = $null
-  # }
-
-  # # override .ToString()
-  # $newContext | Add-Member -MemberType ScriptMethod -Name ToString -Force -Value {
-  #   $contextString = 'mise'
-  #   if ($null -ne $this.Project) {
-  #     $contextString += ": $($this.Project)"
-  #     if ($null -ne $this.Env) {
-  #       $contextString += " $($this.Env)"
-  #       if ($null -ne $this.Service) {
-  #         $contextString += " $($this.Service)"
-  #       }
-  #     }
-  #   }
-  #   $contextString
-  # }
+  $newContextLocation | Add-Member -MemberType ScriptProperty -Name Children -Value {
+    switch ($this.Level) {
+      ([MiseContextLevel]::Global) {
+        (Get-MiseConfig).Projects.Keys | ForEach-Object {
+          New-MiseContextLocation `
+            -Name $_ `
+            -Level ([MiseContextLevel]::Project) `
+            -Parent $this
+        }
+        break
+      }
+    }
+  }
 
   return $newContextLocation
 }
@@ -170,18 +163,13 @@ function Move-MiseContextLocation {
   # move context location to child
   $Context.Location = New-MiseContextLocation `
     -Name $Target `
-    -ContextLevel $nextLevel `
+    -Level $nextLevel `
     -Parent $Context.Location
 }
 
 function Get-MiseContextChildren {
   [CmdletBinding()]
   Param(
-    [Parameter(
-      Mandatory=$false
-    )]
-    [string]$Filter,
-
     [Parameter(
       Mandatory=$true,
       ValueFromPipeline

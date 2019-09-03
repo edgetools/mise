@@ -10,16 +10,34 @@ function Invoke-MiseEnCommand {
       {
           param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
           if ($parameterName -eq 'Locations') {
+            Write-Warning ''
+            Write-Warning "commandName: $commandName"
+            Write-Warning "parameterName: $parameterName"
+            Write-Warning "wordToComplete: $wordToComplete"
+            Write-Warning "commandAst: $commandAst"
+            Write-Warning "commandAst.Length: $($commandAst.Length)"
+            Write-Warning "commandAst.Count: $($commandAst.Count)"
+            Write-Warning "commandAst.CommandElements: $($commandAst.CommandElements)"
+            Write-Warning "commandAst.CommandElements.Count: $($commandAst.CommandElements.Count)"
+            Write-Warning "commandAst.Parent: $($commandAst.Parent)"
+            Write-Warning "fakeBoundParameters: $fakeBoundParameters"
             # add default Context if not provided
             if (!$fakeBoundParameters.ContainsKey('Context')) {
               $fakeBoundParameters.Add('Context', (Get-MiseContext))
             }
-            # get children of current Context
+
+            # get children of current Context, N levels deep
+            $contextAtDepth = $Context
+            for ($i=1; $i -lt $commandAst.CommandElements.Count; $i++) {
+              $contextAtDepth = $contextAtDepth.Location
+            }
             $children = $fakeBoundParameters.Context | Get-MiseContextChildren
-            # check if we can go up
-            if ($null -ne $fakeBoundParameters.Context.Location.Parent) {
-              # add option to go up
-              $children += '..'
+            if ($commandAst.CommandElements.Count -eq 1) {
+              # check if we can go up
+              if ($null -ne $fakeBoundParameters.Context.Location.Parent) {
+                # add option to go up
+                $children += '..'
+              }
             }
             # check if we're trying to complete an option
             if ($null -ne $wordToComplete) {
